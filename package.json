@@ -8,9 +8,12 @@
     "build": "babel src -s -D -d dist --presets es2015,stage-0",
     "start": "node dist",
     "prestart": "npm run -s build",
-    "test": "eslint src"
+    "build:lint": "eslint src",
+    "test": "npm run build:lint && npm run test:unit",
+    "test:unit": "cross-env NODE_ENV=test nyc mocha --recursive tests"
   },
   "eslintConfig": {
+    "parser": "babel-eslint",
     "extends": "eslint:recommended",
     "parserOptions": {
       "ecmaVersion": 7,
@@ -23,6 +26,23 @@
       "no-console": 0,
       "no-unused-vars": 1
     }
+  },
+  "nyc": {
+    "check-coverage": true,
+    "all": true,
+    "include": [
+      "src"
+    ],
+    "require": [
+      "babel-register"
+    ],
+    "cache": true,
+    "sourceMap": false,
+    "instrument": false,
+    "reporter": [
+      "text",
+      "html"
+    ]
   },
   "repository": "developit/express-es6-rest-api",
   "author": "Jason Miller <jason@developit.ca>",
@@ -40,12 +60,20 @@
   "devDependencies": {
     "babel-cli": "^6.9.0",
     "babel-core": "^6.9.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-stage-0": "^6.5.0",
+    "babel-eslint": "^10.0.1",
+    "babel-plugin-istanbul": "^5.1.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "cross-env": "^5.2.0",
     "eslint": "^3.1.1",
-    "nodemon": "^1.9.2"
+    "mocha": "^5.2.0",
+    "nodemon": "^1.9.2",
+    "nyc": "^12.0.2",
+    "chai": "^4.1.2",
+    "sinon": "^6.0.0",
+    "sinon-chai": "^3.2.0"
   },
   "babel": {
     "plugins": [
