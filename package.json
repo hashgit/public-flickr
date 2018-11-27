@@ -10,7 +10,8 @@
     "prestart": "npm run -s build",
     "build:lint": "eslint src",
     "test": "npm run build:lint && npm run test:unit",
-    "test:unit": "cross-env NODE_ENV=test nyc mocha --recursive tests"
+    "test:unit": "cross-env NODE_ENV=test nyc mocha --recursive tests",
+    "deploy:dev": "rimraf build && deploy.dev.sh"
   },
   "eslintConfig": {
     "parser": "babel-eslint",
@@ -66,12 +67,14 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0",
+    "bestzip": "^2.1.2",
+    "chai": "^4.1.2",
     "cross-env": "^5.2.0",
     "eslint": "^3.1.1",
     "mocha": "^5.2.0",
     "nodemon": "^1.9.2",
     "nyc": "^12.0.2",
-    "chai": "^4.1.2",
+    "rimraf": "^2.6.2",
     "sinon": "^6.0.0",
     "sinon-chai": "^3.2.0"
   },

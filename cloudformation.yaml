@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create an EC2 instance with express stack installed
+Parameters:
+  InstanceType:
+    Description: EC2 Instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t1.micro
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - m1.small
+      - m1.medium
+      - m1.large
+    ConstraintDescription: Must be a valid EC2 instance type
+  KeyName:
+    Description: Key pair to allow SSH access to the instance
+    Type: 'AWS::EC2::KeyPair::KeyName'
+Resources:
+  ExpressInstance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: ami-4fffc834
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SecurityGroups:
+        - !Ref ExpressInstanceSecurityGroup
+      UserData:
+        Fn::Base64:
+          !Sub | 
+              #!/bin/bash -eu
+              yum update -y
+              yum install -y nodejs
+              echo 'Node.JS Installed'
+              mkdir express-app
+              cd express-app
+              aws s3 cp s3://poc-express-host/27112018/service.zip .
+              unzip -q service.zip -d ./
+              nohup node ./dist/ > app.out 2> app.err < /dev/null &
+  ExpressInstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable NodeJS server ports
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '3000'
+          ToPort: '3000'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+Outputs:
+  ApplicationURL:
+    Description: URL for Express Stack application
+    Value: !Join 
+      - ''
+      - - 'http://'
+        - !GetAtt 
+          - ExpressInstance
+          - PublicDnsName
+        - ':3000'
