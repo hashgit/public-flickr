@@ -21,7 +21,7 @@ Resources:
   ExpressInstance:
     Type: 'AWS::EC2::Instance'
     Properties:
-      ImageId: ami-4fffc834
+      ImageId: ami-11b06573
       InstanceType: !Ref InstanceType
       KeyName: !Ref KeyName
       SecurityGroups:
@@ -31,11 +31,12 @@ Resources:
           !Sub | 
               #!/bin/bash -eu
               yum update -y
+              curl -sL https://rpm.nodesource.com/setup_10.x | bash -
               yum install -y nodejs
               echo 'Node.JS Installed'
               mkdir express-app
               cd express-app
-              aws s3 cp s3://poc-express-host/27112018/service.zip .
+              aws s3 cp s3://poc-express-host/28112018/service.zip .
               unzip -q service.zip -d ./
               nohup node ./dist/ > app.out 2> app.err < /dev/null &
   ExpressInstanceSecurityGroup:
@@ -60,4 +61,4 @@ Outputs:
         - !GetAtt 
           - ExpressInstance
           - PublicDnsName
-        - ':3000'
+        - ':8080'
